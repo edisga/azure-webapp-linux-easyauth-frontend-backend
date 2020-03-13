@@ -1,9 +1,12 @@
 export default class BackendAPI {
-    constructor() {
+
+    constructor(name) {
+      this.name = name;
     }
-    
-    request = () => {
-      return this.fetch('https://edisga-nodejs-backend.azurewebsites.net/echo/randomname', {
+  
+
+    async request(){
+      return await this.fetch('https://edisga-nodejs-backend.azurewebsites.net/echo/' + name, {
         method: "GET",
       }).then(res => {
         return Promise.resolve(res);
@@ -11,16 +14,14 @@ export default class BackendAPI {
     };
   
     getToken = () => {
-      return localStorage.getItem("access_token");
+      console.log("Getting token from LocalStorage Backend Controller: " + localStorage.getItem("id_token"));
+      return localStorage.getItem("id_token");
     };
 
     fetch = (url, options) => {
-        let headers = {"Authorization": "Bearer " + this.getToken() };
+        let headers = { "Authorization": "Bearer " + this.getToken() };
         // headers["Authorization"] = "Bearer " + this.getToken();
-        return fetch(url, {
-            headers,
-            ...options
-          })
+        return fetch(url, { headers,options })
           .then(this._checkStatus)
           .then(response => response.json());
       };
