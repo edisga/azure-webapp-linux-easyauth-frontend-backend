@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import axios from 'axios';
 import './App.css';
 
 class App extends Component {
   constructor(){
     super();
-    this.state = { token: '', backend: '' };
+    this.state = { token: '', backend: '', backend2: '' };
   }
 
   async componentDidMount() {
@@ -34,6 +35,19 @@ class App extends Component {
         const jsonStringBackEnd = JSON.stringify(responseFromBackEnd)
         this.setState({ backend: jsonStringBackEnd });
         console.log('String Backend: ' + jsonStringBackEnd);
+
+        axios({
+          method: 'get',
+          url: 'https://edisga-nodejs-backend.azurewebsites.net/echo/test',
+          headers: {'Authorization': "Bearer " + id_token, 'Accept' : 'application/json', 'Content-Type': 'application/json'},
+          cancelToken: new axios.CancelToken((token) => {
+          this.cancelToken = token;
+          })
+        })
+        .then((res) => {
+          this.cancelToken = null;
+          this.setState({ backend2: JSON.stringify(res.data) });
+        })
       }
     } catch (error) {
       console.log(error);
@@ -52,6 +66,9 @@ class App extends Component {
         </p>
         <p className="App-intro">
           Values from Backend: { this.state.backend }
+        </p>
+        <p className="App-intro">
+          Values from Backend using axios: { this.state.backend2 }
         </p>
       </div>
     );
